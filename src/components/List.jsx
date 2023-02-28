@@ -17,7 +17,7 @@ export const List = () => {
       <div className='flex items-center gap-x-4 p-4 mb-4 shadow-[inset_-1px_-1px_8px_rgba(0,0,0,0.4),inset_1px_1px_9px_rgba(75,75,75,0.4)] rounded-2xl'>
         <div className='flex flex-col flex-1'>
           <label htmlFor='to-do-new' className='sr-only'>
-            To Do
+            {toDoNew}
           </label>
           <input
             id='to-do-new'
