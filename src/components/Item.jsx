@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import {
   TrashIcon,
@@ -6,14 +6,46 @@ import {
   CheckCircleIcon,
 } from '@heroicons/react/20/solid'
 
-export const Item = ({ toDo, toDoList, setToDoList }) => {
+export const Item = ({ id, toDo, setToDoList }) => {
+  const { position, description, check } = toDo
+
   const [hover, setHover] = useState(false)
-  const [check, setCheck] = useState(false)
+  const [checkItem, setCheckItem] = useState(check)
+  const [desc, setDesc] = useState(description)
 
+  useEffect(() => {
+    const value = { position, description, check: checkItem }
+    localStorage.setItem(id, JSON.stringify(value))
+    setToDoList((prev) => {
+      const newState = new Map(prev)
+      newState.set(id, value)
+      return newState
+    })
+  }, [checkItem, position, description, id, setToDoList])
 
-  const deleteToDo = (id) => {
-    const list = toDoList.filter((toDo) => toDo.id !== id)
-    setToDoList(list)
+  const setChangeToDo = () => {
+    const value = { position, description: desc, check: checkItem }
+    localStorage.setItem(id, JSON.stringify(value))
+    setToDoList((prev) => {
+      const newState = new Map(prev)
+      newState.set(id, value)
+      return newState
+    })
+  }
+
+  function deleteToDo() {
+    localStorage.removeItem(id)
+    setToDoList((prev) => {
+      const newState = new Map(prev)
+      newState.delete(id)
+      return newState
+    })
+  }
+
+  const handleChangeToDo = (event) => {
+    const { value } = event.target
+    if (value.length === 0) return setDesc(description)
+    setDesc(value)
   }
 
   return (
@@ -24,7 +56,7 @@ export const Item = ({ toDo, toDoList, setToDoList }) => {
         onMouseLeave={() => setHover(false)}>
         <svg
           className={`absolute -z-20 top-0 left-0 transition-all h-full ${
-            check ? 'w-full' : 'w-0'
+            checkItem ? 'w-full' : 'w-0'
           }`}
           aria-hidden='true'>
           <rect
@@ -36,12 +68,12 @@ export const Item = ({ toDo, toDoList, setToDoList }) => {
             fillOpacity='0.2'
           />
         </svg>
-        {hover && !check && (
+        {hover && !checkItem && (
           <div className='flex flex-none justify-start mx-2'>
             <button
               type='button'
               className='-m-3 p-3 focus-visible:outline-offset-[-4px]'
-              onClick={() => setCheck(!check)}>
+              onClick={() => setCheckItem(!checkItem)}>
               <span className='sr-only'>Check</span>
               <CheckCircleIcon
                 className='h-5 w-5 text-white/10 hover:text-green-700'
@@ -50,12 +82,12 @@ export const Item = ({ toDo, toDoList, setToDoList }) => {
             </button>
           </div>
         )}
-        {check && (
+        {checkItem && (
           <div className='flex flex-none justify-start mx-2'>
             <button
               type='button'
               className='-m-3 p-3 focus-visible:outline-offset-[-4px]'
-              onClick={() => setCheck(!check)}>
+              onClick={() => setCheckItem(!checkItem)}>
               <span className='sr-only'>Check</span>
               <CheckIcon
                 className='h-5 w-5 text-green-700 hover:text-green-300'
@@ -64,7 +96,18 @@ export const Item = ({ toDo, toDoList, setToDoList }) => {
             </button>
           </div>
         )}
-        <span className='flex-1 mx-2'>{toDo.toDo}</span>
+        <label htmlFor={id} className='sr-only'>
+          {description}
+        </label>
+        <input
+          id={id}
+          name={id}
+          type='text'
+          className='min-w-0 flex-auto rounded-md bg-transparent border-none px-3.5 py-2 text-white'
+          value={desc}
+          onChangeCapture={handleChangeToDo}
+          onBlur={setChangeToDo}
+        />
         <div className='flex flex-none justify-end mx-2'>
           <button
             type='button'
