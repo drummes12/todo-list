@@ -1,9 +1,10 @@
-import { useCallback } from 'react'
-import { loadFull } from 'tsparticles'
-import Head from 'next/head'
-import { List } from '@components/List'
-import Particles from 'react-tsparticles'
 import optionsParticles from '@assets/particles.js'
+import { List } from '@components/List'
+import { ToDosContextProvider } from '@contexts/ToDosContext'
+import Head from 'next/head'
+import { useCallback } from 'react'
+import Particles from 'react-tsparticles'
+import { loadFull } from 'tsparticles'
 
 export default function Home() {
   const particlesInit = useCallback(async (engine) => {
@@ -41,7 +42,9 @@ export default function Home() {
           </radialGradient>
         </defs>
       </svg>
-      <List />
+      <ToDosContextProvider>
+        <List />
+      </ToDosContextProvider>
     </div>
   )
 }

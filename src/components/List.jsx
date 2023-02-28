@@ -1,53 +1,16 @@
-import { useEffect, useState } from 'react'
-import { PlusCircleIcon } from '@heroicons/react/20/solid'
 import { Item } from '@components/Item'
+import { PlusCircleIcon } from '@heroicons/react/20/solid'
+import { useToDoList } from '@hooks/useToDoList'
 
 export const List = () => {
-  const [disabledBtn, setDisabledBtn] = useState(true)
-  const [toDoNew, setToDoNew] = useState('')
-  const [toDoList, setToDoList] = useState(new Map())
-  const [current, setCurrent] = useState(1)
-
-  useEffect(() => {
-    const max = [0]
-    const toDoListStorage = []
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)
-      if (key.startsWith('to-do-')) {
-        max.push(Number(key.substring(6)))
-        const value = JSON.parse(localStorage.getItem(key))
-        toDoListStorage.push([key, value])
-      }
-    }
-    toDoListStorage.sort((toDoStorageA, toDoStorageB) => toDoStorageA[1].position - toDoStorageB[1].position)
-    setToDoList(new Map(toDoListStorage))
-    setCurrent(Math.max(...max) + 1)
-  }, [])
-
-  const handleChangeToDoNew = (event) => {
-    const { value } = event.target
-    if (value.length === 0) setDisabledBtn(true)
-    else setDisabledBtn(false)
-    setToDoNew(value)
-  }
-
-  const handleKeyToDoNew = (event) => {
-    const { code, target } = event
-    if (target.value.length !== 0 && code === 'Enter') addToDo()
-  }
-
-  const addToDo = () => {
-    const key = `to-do-${current}`
-    const value = {
-      position: toDoList.size + 1,
-      description: toDoNew,
-      check: false,
-    }
-    setToDoList((prev) => new Map([...prev, [key, value]]))
-    localStorage.setItem(key, JSON.stringify(value))
-    setToDoNew('')
-    setCurrent((prev) => (prev += 1))
-  }
+  const {
+    disabledBtn,
+    toDoNew,
+    toDos,
+    handleChangeToDoNew,
+    handleKeyToDoNew,
+    handleAddToDo,
+  } = useToDoList()
 
   return (
     <div className='flex flex-col h-96 w-96  p-4 shadow-2xl rounded-3xl bg-slate-200 bg-opacity-5 backdrop-blur-md'>
@@ -70,7 +33,7 @@ export const List = () => {
         <button
           className='rounded-full p-2'
           disabled={disabledBtn}
-          onClick={addToDo}>
+          onClick={handleAddToDo}>
           <span className='sr-only'>Add To Do</span>
           <PlusCircleIcon
             className='h-5 w-5 text-white/10 hover:text-[#E935C1] hover:animate-pulse'
@@ -80,13 +43,8 @@ export const List = () => {
       </div>
       <div className='overflow-y-auto w-full h-full px-2 py-1'>
         <ul>
-          {Array.from(toDoList, ([key, toDo]) => (
-            <Item
-              id={key}
-              toDo={toDo}
-              key={key}
-              setToDoList={setToDoList}
-            />
+          {Array.from(toDos || [], ([key, toDo]) => (
+            <Item key={key} id={key} toDo={toDo} />
           ))}
         </ul>
       </div>

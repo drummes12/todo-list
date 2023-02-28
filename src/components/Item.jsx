@@ -1,59 +1,22 @@
-import { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import {
   TrashIcon,
   CheckIcon,
   CheckCircleIcon,
 } from '@heroicons/react/20/solid'
+import { useToDoItem } from '@hooks/useToDoItem'
 
-export const Item = ({ id, toDo, setToDoList }) => {
-  const { position, description, check } = toDo
-
-  const [hover, setHover] = useState(false)
-  const [checkItem, setCheckItem] = useState(check)
-  const [desc, setDesc] = useState(description)
-
-  useEffect(() => {
-    const value = { position, description, check: checkItem }
-    localStorage.setItem(id, JSON.stringify(value))
-    setToDoList((prev) => {
-      const newState = new Map(prev)
-      newState.set(id, value)
-      return newState
-    })
-  }, [checkItem, position, description, id, setToDoList])
-
-  const setChangeToDo = () => {
-    const value = { position, description: desc, check: checkItem }
-    localStorage.setItem(id, JSON.stringify(value))
-    setToDoList((prev) => {
-      const newState = new Map(prev)
-      newState.set(id, value)
-      return newState
-    })
-  }
-
-  function deleteToDo() {
-    localStorage.removeItem(id)
-    setToDoList((prev) => {
-      const newState = new Map(prev)
-      newState.delete(id)
-      let position = 1
-      for (const [existingKey, existingToDo] of newState.entries()) {
-        const value = { ...existingToDo, position }
-        newState.set(existingKey, value)
-        localStorage.setItem(existingKey, JSON.stringify(value))
-        position += 1
-      }
-      return newState
-    })
-  }
-
-  const handleChangeToDo = (event) => {
-    const { value } = event.target
-    if (value.length === 0) return setDesc(description)
-    setDesc(value)
-  }
+export const Item = ({ id, toDo }) => {
+  const {
+    desc,
+    checkItem,
+    hover,
+    setHover,
+    setCheckItem,
+    setChangeToDo,
+    handleChangeToDo,
+    handleDeleteToDo,
+  } = useToDoItem({ id, toDo })
 
   return (
     <li className='py-1'>
@@ -104,7 +67,7 @@ export const Item = ({ id, toDo, setToDoList }) => {
           </div>
         )}
         <label htmlFor={id} className='sr-only'>
-          {description}
+          {desc}
         </label>
         <input
           id={id}
@@ -112,15 +75,15 @@ export const Item = ({ id, toDo, setToDoList }) => {
           type='text'
           className='min-w-0 flex-auto rounded-md bg-transparent border-none px-3.5 py-2 text-white'
           value={desc}
-          onChangeCapture={handleChangeToDo}
+          onChange={handleChangeToDo}
           onBlur={setChangeToDo}
         />
         <div className='flex flex-none justify-end mx-2'>
           <button
             type='button'
             className='-m-3 p-3 focus-visible:outline-offset-[-4px]'
-            onClick={deleteToDo}>
-            <span className='sr-only'>Dismiss</span>
+            onClick={handleDeleteToDo}>
+            <span className='sr-only'>Delete</span>
             <TrashIcon
               className='h-5 w-5 text-white/10 hover:text-red-800'
               aria-hidden='true'
