@@ -7,7 +7,7 @@ import Particles from 'react-tsparticles'
 import { loadFull } from 'tsparticles'
 
 export default function Home() {
-  const [visibleHeight, setVisibleHeight] = useState(window.innerHeight)
+  const [visibleHeight, setVisibleHeight] = useState(0)
 
   useEffect(() => {
     function handleResize() {
@@ -16,11 +16,7 @@ export default function Home() {
       setVisibleHeight(browserHeight - visibleHeight)
     }
 
-    window.addEventListener('resize', handleResize)
-
-    return () => {
-      window.removeEventListener('resize', handleResize)
-    }
+    handleResize()
   }, [])
 
   const particlesInit = useCallback(async (engine) => {
