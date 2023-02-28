@@ -23,7 +23,7 @@ export default function Home() {
         <title>To Do List</title>
         <meta name='description' content='To Do List by Drummes12' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <link rel='icon' href='/favicon.ico' />
+        <link rel='icon' type='image/png' href='/favicon.png' />
       </Head>
       <svg
         viewBox='0 0 1024 1024'
@@ -45,6 +45,7 @@ export default function Home() {
       <ToDosContextProvider>
         <List />
       </ToDosContextProvider>
+      <span className='absolute bottom-4 w-full text-center text-white text-xs'>Created by Drummes12.</span>
     </div>
   )
 }
