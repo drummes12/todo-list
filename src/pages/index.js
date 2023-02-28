@@ -2,17 +2,35 @@ import optionsParticles from '@assets/particles.js'
 import { List } from '@components/List'
 import { ToDosContextProvider } from '@contexts/ToDosContext'
 import Head from 'next/head'
-import { useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Particles from 'react-tsparticles'
 import { loadFull } from 'tsparticles'
 
 export default function Home() {
+  const [visibleHeight, setVisibleHeight] = useState(window.innerHeight)
+
+  useEffect(() => {
+    function handleResize() {
+      const browserHeight = window.outerHeight
+      const visibleHeight = browserHeight - window.innerHeight
+      setVisibleHeight(browserHeight - visibleHeight)
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
   const particlesInit = useCallback(async (engine) => {
     await loadFull(engine)
   }, [])
 
   return (
-    <div className='grid relative isolate place-content-center h-screen w-screen overflow-hidden bg-gray-900'>
+    <div
+      className='fixed isolate grid overscroll-none place-content-center w-full overflow-hidden bg-gray-900'
+      style={{ height: `${visibleHeight}px` }}>
       <Particles
         className='-z-10'
         id='tsparticles'
@@ -22,7 +40,10 @@ export default function Home() {
       <Head>
         <title>To Do List</title>
         <meta name='description' content='To Do List by Drummes12' />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
+        <meta
+          name='viewport'
+          content='width=device-width, height=device-height, initial-scale=1'
+        />
         <link rel='icon' type='image/png' href='/favicon.png' />
       </Head>
       <svg
@@ -45,7 +66,9 @@ export default function Home() {
       <ToDosContextProvider>
         <List />
       </ToDosContextProvider>
-      <span className='absolute bottom-4 w-full text-center text-white text-xs'>Created by Drummes12.</span>
+      <span className='absolute bottom-4 w-full text-center text-white text-xs'>
+        Created by Drummes12.
+      </span>
     </div>
   )
 }

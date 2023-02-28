@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ngrok": "ngrok http 3000"
   },
   "dependencies": {
     "@headlessui/react": "1.7.12",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "eslint": "8.35.0",
-    "eslint-config-next": "13.2.1"
+    "eslint-config-next": "13.2.1",
+    "ngrok": "4.3.3"
   }
 }

@@ -11,10 +11,13 @@ export const useToDoList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    setDisabledBtn(false)
+    if (toDoNew === '') setDisabledBtn(true)
+  }, [toDoNew])
+
   const handleChangeToDoNew = (event) => {
     const { value } = event.target
-    if (value.length === 0) setDisabledBtn(true)
-    else setDisabledBtn(false)
     setToDoNew(value)
   }
 

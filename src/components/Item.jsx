@@ -8,20 +8,21 @@ import { useToDoItem } from '@hooks/useToDoItem'
 
 export const Item = ({ id, toDo }) => {
   const {
+    toDoRef,
+    isTouchDevice,
     desc,
     checkItem,
     hover,
     setHover,
     setCheckItem,
     setChangeToDo,
-    handleChangeToDo,
     handleDeleteToDo,
   } = useToDoItem({ id, toDo })
 
   return (
     <li className='py-1'>
       <div
-        className='relative w-full h-12 text-white flex flex-row justify-between items-center p-2 overflow-hidden bg-opacity-5 bg-blur rounded-xl shadow-[-1px_-1px_10px_rgba(0,0,0,0.2)] hover:shadow-[inset_-1px_-1px_10px_rgba(0,0,0,0.2)] transition-colors duration-500'
+        className='relative w-full text-white flex flex-row justify-between items-center p-2 overflow-hidden bg-opacity-5 bg-blur rounded-xl shadow-[-1px_-1px_10px_rgba(0,0,0,0.2)] hover:shadow-[inset_-1px_-1px_10px_rgba(0,0,0,0.2)] transition-colors duration-500'
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}>
         <svg
@@ -38,7 +39,7 @@ export const Item = ({ id, toDo }) => {
             fillOpacity='0.2'
           />
         </svg>
-        {hover && !checkItem && (
+        {(isTouchDevice || hover) && !checkItem && (
           <div className='flex flex-none justify-start mx-2'>
             <button
               type='button'
@@ -66,17 +67,12 @@ export const Item = ({ id, toDo }) => {
             </button>
           </div>
         )}
-        <label htmlFor={id} className='sr-only'>
-          {desc}
-        </label>
-        <input
-          id={id}
-          name={id}
-          type='text'
-          className='min-w-0 flex-auto rounded-md bg-transparent border-none px-3.5 py-2 text-white'
-          value={desc}
-          onChange={handleChangeToDo}
+        <div
+          ref={toDoRef}
+          contentEditable={true}
+          className='min-w-0 h-auto text-left flex-auto rounded-md bg-transparent border-none px-3.5 py-2 text-white'
           onBlur={setChangeToDo}
+          dangerouslySetInnerHTML={{ __html: desc }}
         />
         <div className='flex flex-none justify-end mx-2'>
           <button

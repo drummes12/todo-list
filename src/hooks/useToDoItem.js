@@ -1,13 +1,19 @@
 import { ToDosContext } from '@contexts/ToDosContext'
-import { useContext, useEffect, useState } from 'react'
+import { useRef, useContext, useEffect, useState } from 'react'
 
 export const useToDoItem = ({ id, toDo }) => {
   const { position, description, check } = toDo
+  const toDoRef = useRef(null)
   const { deleteToDo, updateToDo } = useContext(ToDosContext)
 
   const [hover, setHover] = useState(false)
   const [checkItem, setCheckItem] = useState(check)
   const [desc, setDesc] = useState(description)
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
+
+  useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints)
+  }, [])
 
   useEffect(() => {
     const value = { position, description, check: checkItem }
@@ -16,7 +22,13 @@ export const useToDoItem = ({ id, toDo }) => {
   }, [checkItem])
 
   const setChangeToDo = () => {
-    const value = { position, description: desc, check: checkItem }
+    const textContent = toDoRef.current.textContent.trim()
+    if (textContent === '') {
+      toDoRef.current.innerHTML = description
+      return setDesc(description)
+    }
+    setDesc(textContent)
+    const value = { position, description: textContent, check: checkItem }
     updateToDo(id, value)
   }
 
@@ -24,20 +36,15 @@ export const useToDoItem = ({ id, toDo }) => {
     deleteToDo(id)
   }
 
-  const handleChangeToDo = (event) => {
-    const { value } = event.target
-    if (value.length === 0) return setDesc(description)
-    setDesc(value)
-  }
-
   return {
+    toDoRef,
+    isTouchDevice,
     desc,
     checkItem,
     hover,
     setHover,
     setCheckItem,
     setChangeToDo,
-    handleChangeToDo,
     handleDeleteToDo,
   }
 }
