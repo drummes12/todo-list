@@ -38,6 +38,13 @@ export const Item = ({ id, toDo, setToDoList }) => {
     setToDoList((prev) => {
       const newState = new Map(prev)
       newState.delete(id)
+      let position = 1
+      for (const [existingKey, existingToDo] of newState.entries()) {
+        const value = { ...existingToDo, position }
+        newState.set(existingKey, value)
+        localStorage.setItem(existingKey, JSON.stringify(value))
+        position += 1
+      }
       return newState
     })
   }

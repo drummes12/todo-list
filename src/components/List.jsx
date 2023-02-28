@@ -10,14 +10,17 @@ export const List = () => {
 
   useEffect(() => {
     const max = [0]
+    const toDoListStorage = []
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i)
       if (key.startsWith('to-do-')) {
         max.push(Number(key.substring(6)))
         const value = JSON.parse(localStorage.getItem(key))
-        setToDoList((prev) => new Map([...prev, [key, value]]))
+        toDoListStorage.push([key, value])
       }
     }
+    toDoListStorage.sort((toDoStorageA, toDoStorageB) => toDoStorageA[1].position - toDoStorageB[1].position)
+    setToDoList(new Map(toDoListStorage))
     setCurrent(Math.max(...max) + 1)
   }, [])
 
@@ -36,7 +39,7 @@ export const List = () => {
   const addToDo = () => {
     const key = `to-do-${current}`
     const value = {
-      position: 1,
+      position: toDoList.size + 1,
       description: toDoNew,
       check: false,
     }
