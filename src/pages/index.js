@@ -10,6 +10,12 @@ export default function Home() {
   const [visibleHeight, setVisibleHeight] = useState(0)
 
   useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js')
+      })
+    }
+
     function handleResize() {
       const browserHeight = window.outerHeight
       const visibleHeight = browserHeight - window.innerHeight
@@ -17,6 +23,10 @@ export default function Home() {
     }
 
     handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
   }, [])
 
   const particlesInit = useCallback(async (engine) => {
@@ -36,11 +46,6 @@ export default function Home() {
       <Head>
         <title>To Do List</title>
         <meta name='description' content='To Do List by Drummes12' />
-        <meta
-          name='viewport'
-          content='width=device-width, height=device-height, initial-scale=1'
-        />
-        <link rel='icon' type='image/png' href='/favicon.png' />
       </Head>
       <svg
         viewBox='0 0 1024 1024'
